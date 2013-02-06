@@ -21,12 +21,46 @@
 - (UIImage *)screenshot
 {
     UIGraphicsBeginImageContext(self.frame.size);
-    [self.layer renderInContext:UIGraphicsGetCurrentContext()];
     
-    UIImage *screenshot = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    CGFloat scale = 0.0;
+    // Check first for the Version, because of performance
+    if([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0 && [self isMapViewInSubviews:self.subviews])
+        scale = 1.0f;
     
-    return screenshot;
+    UIGraphicsBeginImageContextWithOptions(self.frame.size, NO, scale);
+    
+    if(UIGraphicsGetCurrentContext() == nil)
+    {
+        NSLog(@"UIGraphicsGetCurrentContext is nil. You may have a UIView (%@) with no really frame (%@)", [self class], NSStringFromCGRect(self.frame));
+        return nil;
+    }
+    else
+    {
+        [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+        
+        UIImage *screenshot = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        return screenshot;
+    }
+}
+
+- (BOOL)isMapViewInSubviews:(NSArray *)subviews
+{
+    for(id view in subviews)
+    {
+        if([view isKindOfClass:NSClassFromString(@"MKMapView")])
+        {
+            return YES;
+        }
+        else
+        {
+            UIView *subView = view;
+            [self isMapViewInSubviews:subView.subviews];
+        }
+    }
+    
+    return NO;
 }
 
 @end
