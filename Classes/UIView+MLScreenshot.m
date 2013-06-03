@@ -20,11 +20,7 @@
 
 - (UIImage *)screenshot
 {
-    CGFloat scale = 0.0;
-    // Check first for the Version, because of performance
-    if([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.0 && [self isMapViewInSubviews:self.subviews])
-        scale = 1.0f;
-    
+    CGFloat scale = [[UIScreen mainScreen] scale];
     UIImage *screenshot;
     
     UIGraphicsBeginImageContextWithOptions(self.frame.size, NO, scale);
