@@ -41,6 +41,27 @@
     return screenshot;
 }
 
+- (UIImage *)glScreenshot
+{
+  // Draw OpenGL data to an image context
+  
+  UIGraphicsBeginImageContext(self.frame.size);
+  int width = self.frame.size.width;
+  int height = self.frame.size.height;
+  unsigned char buffer[width * height * 4];
+  
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, &buffer);
+  CGDataProviderRef dRef = CGDataProviderCreateWithData(NULL, &buffer, width * height * 4, NULL);
+  CGImageRef ref = CGImageCreate(width,height,8,32,width*4, CGColorSpaceCreateDeviceRGB(), kCGImageAlphaLast, dRef, NULL, true, kCGRenderingIntentDefault);
+  
+  CGContextScaleCTM(context, 1.0, -1.0);
+  CGContextTranslateCTM(context, 0, -self.frame.size.height);
+  UIImage *im = [[UIImage alloc] initWithCGImage:ref];
+  UIGraphicsEndImageContext();
+  return im;
+}
+
 - (BOOL)isMapViewInSubviews:(NSArray *)subviews
 {
     for(id view in subviews)

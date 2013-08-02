@@ -17,5 +17,6 @@
 @interface UIView (MLScreenshot)
 
 - (UIImage *)screenshot;
+- (UIImage *)glScreenshot;
 
 @end
